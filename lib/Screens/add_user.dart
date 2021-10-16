@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class AddUser extends StatefulWidget {
@@ -35,11 +34,6 @@ class _AddUserState extends State<AddUser> {
     passwordController.clear();
   }
 
-
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +55,7 @@ class _AddUserState extends State<AddUser> {
                     labelStyle: TextStyle(fontSize: 20.0),
                     border: OutlineInputBorder(),
                     errorStyle:
-                    TextStyle(color: Colors.redAccent, fontSize: 15),
+                        TextStyle(color: Colors.redAccent, fontSize: 15),
                   ),
                   controller: nameController,
                   validator: (value) {
@@ -81,7 +75,7 @@ class _AddUserState extends State<AddUser> {
                     labelStyle: TextStyle(fontSize: 20.0),
                     border: OutlineInputBorder(),
                     errorStyle:
-                    TextStyle(color: Colors.redAccent, fontSize: 15),
+                        TextStyle(color: Colors.redAccent, fontSize: 15),
                   ),
                   controller: emailController,
                   validator: (value) {
@@ -104,7 +98,7 @@ class _AddUserState extends State<AddUser> {
                     labelStyle: TextStyle(fontSize: 20.0),
                     border: OutlineInputBorder(),
                     errorStyle:
-                    TextStyle(color: Colors.redAccent, fontSize: 15),
+                        TextStyle(color: Colors.redAccent, fontSize: 15),
                   ),
                   controller: passwordController,
                   validator: (value) {
