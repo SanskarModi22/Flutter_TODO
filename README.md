@@ -1,6 +1,6 @@
 # flutter_todo
 
-A new Flutter project.
+Flutter Project to apply learnings of CRUD operation using firebase without Provider.
 
 ## Getting Started
 
