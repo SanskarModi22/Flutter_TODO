@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class AddUser extends StatefulWidget {
@@ -13,6 +14,7 @@ class _AddUserState extends State<AddUser> {
   var name = "";
   var email = "";
   var password = "";
+
   // Create a text controller and use it to retrieve the current value
   // of the TextField.
   final nameController = TextEditingController();
@@ -32,6 +34,17 @@ class _AddUserState extends State<AddUser> {
     nameController.clear();
     emailController.clear();
     passwordController.clear();
+  }
+
+  // Adding Student
+  CollectionReference users =
+  FirebaseFirestore.instance.collection('users');
+
+  Future<void> addUser() {
+    return users
+        .add({'Name': name, 'email': email, 'password': password})
+        .then((value) => print('User Added'))
+        .catchError((error) => print('Failed to Add user: $error'));
   }
 
   @override
@@ -55,7 +68,7 @@ class _AddUserState extends State<AddUser> {
                     labelStyle: TextStyle(fontSize: 20.0),
                     border: OutlineInputBorder(),
                     errorStyle:
-                        TextStyle(color: Colors.redAccent, fontSize: 15),
+                    TextStyle(color: Colors.redAccent, fontSize: 15),
                   ),
                   controller: nameController,
                   validator: (value) {
@@ -75,7 +88,7 @@ class _AddUserState extends State<AddUser> {
                     labelStyle: TextStyle(fontSize: 20.0),
                     border: OutlineInputBorder(),
                     errorStyle:
-                        TextStyle(color: Colors.redAccent, fontSize: 15),
+                    TextStyle(color: Colors.redAccent, fontSize: 15),
                   ),
                   controller: emailController,
                   validator: (value) {
@@ -98,7 +111,7 @@ class _AddUserState extends State<AddUser> {
                     labelStyle: TextStyle(fontSize: 20.0),
                     border: OutlineInputBorder(),
                     errorStyle:
-                        TextStyle(color: Colors.redAccent, fontSize: 15),
+                    TextStyle(color: Colors.redAccent, fontSize: 15),
                   ),
                   controller: passwordController,
                   validator: (value) {
@@ -121,7 +134,7 @@ class _AddUserState extends State<AddUser> {
                             name = nameController.text;
                             email = emailController.text;
                             password = passwordController.text;
-
+                            addUser();
                             clearText();
                           });
                         }
