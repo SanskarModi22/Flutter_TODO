@@ -11,18 +11,29 @@ class ListUser extends StatefulWidget {
 class _ListUserState extends State<ListUser> {
   final Stream<QuerySnapshot> _usersStream =
       FirebaseFirestore.instance.collection('users').snapshots();
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+  Future<void> deleteUser(id) {
+    return users
+        .doc(id)
+        .delete()
+        .then((value) => print("User Deleted $id"))
+        .catchError((error) => print("Failed to delete user: $error"));
+  }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
         stream: _usersStream,
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot?> snapshot) {
-          final List storedocs =[];
+        builder:
+            (BuildContext context, AsyncSnapshot<QuerySnapshot?> snapshot) {
+          final List storedocs = [];
           snapshot.data?.docs.map((DocumentSnapshot doc) {
             Map? fbData = doc.data()
                 as Map<String, dynamic>; //Here we have to tell the app
             //that the data is in String,dynamic format
             storedocs.add(fbData); //Adding data to the list
+            fbData['id'] = doc.id;
           }).toList(); //So that it is not null
           if (snapshot.hasError) {
             print('Something went Wrong');
@@ -131,12 +142,13 @@ class _ListUserState extends State<ListUser> {
                         children: [
                           TableCell(
                             child: Center(
-                                child: Text(storedocs[i]['Name']??'Sanskar',
+                                child: Text(storedocs[i]['Name'] ?? 'Sanskar',
                                     style: TextStyle(fontSize: 18.0))),
                           ),
                           TableCell(
                             child: Center(
-                                child: Text(storedocs[i]?['email']??'tyrtyrtyt',
+                                child: Text(
+                                    storedocs[i]?['email'] ?? 'tyrtyrtyt',
                                     style: TextStyle(fontSize: 18.0))),
                           ),
                           TableCell(
@@ -152,7 +164,7 @@ class _ListUserState extends State<ListUser> {
                                 ),
                                 IconButton(
                                   onPressed: () {
-                                    print(storedocs);
+                                    deleteUser(storedocs[i]['id']);
                                   },
                                   icon: Icon(
                                     Icons.delete,
