@@ -1,6 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_todo/Screens/update_user.dart';
 
+CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+Future<void> deleteUser(id) {
+  return users
+      .doc(id)
+      .delete()
+      .then((value) => print("User Deleted $id"))
+      .catchError((error) => print("Failed to delete user: $error"));
+}
 class ListUser extends StatefulWidget {
   ListUser({Key? key}) : super(key: key);
 
@@ -11,15 +21,7 @@ class ListUser extends StatefulWidget {
 class _ListUserState extends State<ListUser> {
   final Stream<QuerySnapshot> _usersStream =
       FirebaseFirestore.instance.collection('users').snapshots();
-  CollectionReference users = FirebaseFirestore.instance.collection('users');
 
-  Future<void> deleteUser(id) {
-    return users
-        .doc(id)
-        .delete()
-        .then((value) => print("User Deleted $id"))
-        .catchError((error) => print("Failed to delete user: $error"));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +158,15 @@ class _ListUserState extends State<ListUser> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 IconButton(
-                                  onPressed: () => {},
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => UpdateUser(
+                                            id: storedocs[i]['id']),
+                                      ),
+                                    );
+                                  },
                                   icon: Icon(
                                     Icons.edit,
                                     color: Colors.orange,

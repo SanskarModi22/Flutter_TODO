@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_todo/Screens/list_user.dart';
+
+import 'add_user.dart';
 
 class UpdateUser extends StatefulWidget {
   final String id;
@@ -12,111 +16,157 @@ class _UpdateUserState extends State<UpdateUser> {
   final _formKey = GlobalKey<FormState>();
 
   // Updaing Student
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+  Future<void> updateUser(id, name, email, password) {
+    return users
+        .doc(id)
+        .update({'Name': name, 'email': email, 'password': password})
+        .then((value) => print("User Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Update Student"),
-        ),
-        body: Form(
+      appBar: AppBar(
+        title: Text("Update Student"),
+      ),
+      body: Form(
           key: _formKey,
           // Getting Specific Data by ID
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
-            child: ListView(
-              children: [
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 10.0),
-                  child: TextFormField(
-                    initialValue: "Sanskar",
-                    autofocus: false,
-                    decoration: InputDecoration(
-                      labelText: 'Name: ',
-                      labelStyle: TextStyle(fontSize: 20.0),
-                      border: OutlineInputBorder(),
-                      errorStyle:
-                          TextStyle(color: Colors.redAccent, fontSize: 15),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please Enter Name';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 10.0),
-                  child: TextFormField(
-                    initialValue: "modisanskar5@gmail.com",
-                    autofocus: false,
-                    decoration: InputDecoration(
-                      labelText: 'Email: ',
-                      labelStyle: TextStyle(fontSize: 20.0),
-                      border: OutlineInputBorder(),
-                      errorStyle:
-                          TextStyle(color: Colors.redAccent, fontSize: 15),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please Enter Email';
-                      } else if (!value.contains('@')) {
-                        return 'Please Enter Valid Email';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 10.0),
-                  child: TextFormField(
-                    initialValue: "....",
-                    autofocus: false,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: 'Password: ',
-                      labelStyle: TextStyle(fontSize: 20.0),
-                      border: OutlineInputBorder(),
-                      errorStyle:
-                          TextStyle(color: Colors.redAccent, fontSize: 15),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please Enter Password';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          // Validate returns true if the form is valid, otherwise false.
+          child: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+            future: FirebaseFirestore.instance
+                .collection('users')
+                .doc(widget.id)
+                .get(),
+            builder: (_, snapshot) {
+              if (snapshot.hasError) {
+                print('Something Went Wrong');
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              var data = snapshot.data?.data();
+              var name = data?['Name'] ?? ""; //Reading data
+              var email = data?['email'] ?? "";
+              var password = data?['password'] ?? "";
+
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                child: ListView(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: 10.0),
+                      child: TextFormField(
+                        initialValue: name,
+                        autofocus: false,
+                        onChanged: (value) => name =
+                            value, //This on Changes is necessary for updating
+                        decoration: InputDecoration(
+                          labelText: 'Name: ',
+                          labelStyle: TextStyle(fontSize: 20.0),
+                          border: OutlineInputBorder(),
+                          errorStyle:
+                              TextStyle(color: Colors.redAccent, fontSize: 15),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please Enter Name';
+                          }
+                          return null;
                         },
-                        child: Text(
-                          'Update',
-                          style: TextStyle(fontSize: 18.0),
-                        ),
                       ),
-                      ElevatedButton(
-                        onPressed: () => {},
-                        child: Text(
-                          'Reset',
-                          style: TextStyle(fontSize: 18.0),
+                    ),
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: 10.0),
+                      child: TextFormField(
+                        initialValue: email,
+                        autofocus: false,
+                        onChanged: (value) => email = value,
+                        decoration: InputDecoration(
+                          labelText: 'Email: ',
+                          labelStyle: TextStyle(fontSize: 20.0),
+                          border: OutlineInputBorder(),
+                          errorStyle:
+                              TextStyle(color: Colors.redAccent, fontSize: 15),
                         ),
-                        style:
-                            ElevatedButton.styleFrom(primary: Colors.blueGrey),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please Enter Email';
+                          } else if (!value.contains('@')) {
+                            return 'Please Enter Valid Email';
+                          }
+                          return null;
+                        },
                       ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-        ));
+                    ),
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: 10.0),
+                      child: TextFormField(
+                        initialValue: password,
+                        autofocus: false,
+                        onChanged: (value) => password = value,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          labelText: 'Password: ',
+                          labelStyle: TextStyle(fontSize: 20.0),
+                          border: OutlineInputBorder(),
+                          errorStyle:
+                              TextStyle(color: Colors.redAccent, fontSize: 15),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please Enter Password';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              // Validate returns true if the form is valid, otherwise false.
+                              if (_formKey.currentState!.validate()) {
+                                updateUser(widget.id, name, email, password);
+                                Navigator.pop(context);
+                              }
+                            },
+                            child: Text(
+                              'Update',
+                              style: TextStyle(fontSize: 18.0),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              deleteUser(widget.id);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddUser(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'Reset',
+                              style: TextStyle(fontSize: 18.0),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.blueGrey),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              );
+            },
+          )),
+    );
   }
 }
